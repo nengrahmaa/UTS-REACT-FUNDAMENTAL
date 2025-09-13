@@ -5,7 +5,7 @@ function Header({ cartCount = 0, likeCount = 0 }) {
         <header className="fixed top-0 left-0 right-0 z-50 bg-white shadow-md px-6 py-4 flex items-center justify-between">
             <a href="#" className="flex items-center space-x-2">
                 <img
-                    src="https://www.bmw.co.id/content/dam/bmw/common/images/logo-icons/BMW/BMW_Grey-Colour_RGB.SVG.asset.1697707041685.SVG"
+                    src="logo.png"
                     alt="Logo"
                     className="h-15 w-auto object-contain"
                 />

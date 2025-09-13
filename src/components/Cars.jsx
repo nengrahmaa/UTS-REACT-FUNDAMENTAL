@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
     Heart,
     Info,
@@ -29,7 +29,56 @@ export default function Cars({
     const [comments, setComments] = useState({});
     const [csOpen, setCsOpen] = useState(false);
     const [csMessages, setCsMessages] = useState([]);
+    const [dataCars, setDatacars] = useState(products);
+    const [sortOption, setSortOption] = useState('');
+    // dataCars.filter((car) => car.name)
 
+    // materi baru
+
+    const fetchdata =() =>{
+        setDatacars(products);
+    }
+
+    useEffect(() => {
+        fetchdata();
+    }, [products]);
+
+    useEffect(() => {
+        setDatacars(prev => sortData(sortOption, prev));
+    }, [sortOption]);
+
+    const handleChange = (keyword) => {
+        let filteredData = products;
+
+        if (keyword.trim()) {
+            filteredData = products.filter(car =>
+                car.name.toLowerCase().includes(keyword.toLowerCase()) ||
+                car.color.toLowerCase().includes(keyword.toLowerCase()) ||
+                car.price.toString().includes(keyword)
+            );
+        }
+
+        const sortedData = sortData(sortOption, filteredData);
+        setDatacars(sortedData);
+    };
+
+    const sortData = (option, data) => {
+        const sorted = [...data];
+        if (option === 'name-asc') {
+            sorted.sort((a, b) => a.name.localeCompare(b.name));
+        } else if (option === 'name-desc') {
+            sorted.sort((a, b) => b.name.localeCompare(a.name));
+        } else if (option === 'price-asc') {
+            sorted.sort((a, b) => a.price - b.price);
+        } else if (option === 'price-desc') {
+            sorted.sort((a, b) => b.price - a.price);
+        } else if (option === ''){
+            fetchdata();
+        }
+        return sorted;
+    };
+
+    // -------------------------------------------------------------------------
     const addComment = (id, text) => {
         if (!text.trim()) return;
         setComments((prev) => ({
@@ -51,13 +100,40 @@ export default function Cars({
                 Latest BMW Models
             </h1>
 
+            <div className="max-w-md mx-auto mb-6">
+                <input
+                    type="text"
+                    placeholder="Search by name, color, or price..."
+                    className="w-full py-2 px-4 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    onChange={(e) => handleChange(e.target.value)}
+                />
+            </div>
+            <div className="flex justify-end mb-6">
+                <select
+                    onChange={(e) => {
+                        const option = e.target.value;
+                        setSortOption(option);
+                        const sorted = sortData(option, dataCars);
+                        setDatacars(sorted);
+                    }}
+                    className="py-2 px-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                    <option value="">Sort By</option>
+                    <option value="name-asc">Name A-Z</option>
+                    <option value="name-desc">Name Z-A</option>
+                    <option value="price-asc">Price Low to High</option>
+                    <option value="price-desc">Price High to Low</option>
+                </select>
+            </div>
+
             <MsService onClick={() => setCsOpen(true)} />
+
 
             <div
                 className={`grid gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 ${modalOpen ? "pointer-events-none opacity-30" : ""
                     }`}
             >
-                {products.map((p) => (
+                {dataCars.map((p) => (
                     <Card
                         key={p.id}
                         product={p}
